@@ -3,3 +3,10 @@
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
 @source "../node_modules/flowbite-react";
+
+@theme {
+  --color-wl-lime: #D6FF38;
+  --color-wl-black: #000000;
+  --color-wl-surface: #111111;
+  --color-wl-surface-hover: #1A1A1A;
+}

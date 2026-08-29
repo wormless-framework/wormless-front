@@ -1,11 +1,15 @@
-import { Button, DarkThemeToggle } from 'flowbite-react';
+import { Sidebar } from './components/Sidebar';
+import { Header } from './components/Header';
+import { Dashboard } from './pages/Dashboard';
 
 function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 gap-4 transition-colors duration-200">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-        Wormless Front 
-      </h1>
+    <div className="flex h-screen w-full bg-wl-black transition-colors duration-200">
+      <Sidebar />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <Header />
+        <Dashboard />
+      </div>
     </div>
   );
 }

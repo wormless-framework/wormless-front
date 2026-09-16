@@ -15,7 +15,6 @@ export function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   
-  // NOVO ESTADO: Guarda os dados do TXT de retorno
   const [reportData, setReportData] = useState<{ title: string; content: string } | null>(null);
 
   const handleUpload = (file: File) => {

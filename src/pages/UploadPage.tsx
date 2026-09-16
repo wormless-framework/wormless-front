@@ -20,7 +20,7 @@ export function UploadPage() {
       <Dropzone 
         id="sandbox-text-upload"
         title="Enviar Arquivo"
-        subtitle="ou arraste para cá"
+        subtitle=""
         hint="TXT, CSV, LOG ou JSON"
         accept=".txt,.csv,.log,.json,text/plain"
         icon={<DataFileIcon />}

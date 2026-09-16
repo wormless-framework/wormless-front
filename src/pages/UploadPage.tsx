@@ -9,21 +9,29 @@ const DataFileIcon = () => (
 );
 
 export function UploadPage() {
-  // 1. Estado para guardar o arquivo selecionado
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false); // <-- Novo estado!
 
-  // 2. Quando o Dropzone capturar o arquivo, salvamos ele no estado
   const handleUpload = (file: File) => {
     setSelectedFile(file);
   };
 
-  // 3. Função que roda quando o usuário clica no botão "Iniciar Validação"
   const handleStartValidation = () => {
     if (!selectedFile) return;
     
-    // TODO: FAZER fetch/axios para o Backend 
-    console.log("Preparando envio para a Sandbox...", selectedFile.name);
-    alert(`Enviando o arquivo "${selectedFile.name}" para validação!`);
+    // 1. Inicia o carregamento (Botão gira e fica bloqueado)
+    setIsUploading(true);
+    console.log("Enviando arquivo para a API...");
+
+    // 2. Simulação do tempo de resposta do servidor 
+    setTimeout(() => {
+      // 3. O que acontece quando o servidor responde:
+      setIsUploading(false); // Para de girar
+      alert(`Validação do arquivo "${selectedFile.name}" concluída com sucesso!`);
+      
+      // Limpar o arquivo se quiser que o usuário envie outro logo em seguida
+      //setSelectedFile(null); 
+    }, 3000); 
   };
 
   return (
@@ -34,24 +42,28 @@ export function UploadPage() {
           Fazer Upload
         </h1>
         <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">
-          Validação de Arquivos
+          Validação de Arquivos Sandbox
         </p>
       </div>
 
-      <Dropzone 
-        id="sandbox-text-upload"
-        title="Enviar Arquivo"
-        subtitle=""
-        hint="TXT, CSV, LOG ou JSON"
-        accept=".txt,.csv,.log,.json,text/plain"
-        icon={<DataFileIcon />}
-        onFileSelect={handleUpload}
-      />
+      <div className={isUploading ? "opacity-50 pointer-events-none transition-opacity" : ""}>
+        <Dropzone 
+          id="sandbox-text-upload"
+          title="Enviar Arquivo"
+          subtitle=""
+          hint="TXT, CSV, LOG ou JSON"
+          accept=".txt,.csv,.log,.json,text/plain"
+          icon={<DataFileIcon />}
+          onFileSelect={handleUpload}
+        />
+      </div>
 
-      {/* 4. O Botão só aparece na tela SE um arquivo for selecionado */}
       {selectedFile && (
         <div className="flex justify-end mt-2 animate-fade-in">
-          <Button onClick={handleStartValidation}>
+          <Button 
+            onClick={handleStartValidation} 
+            isLoading={isUploading}
+          >
             Iniciar Validação
           </Button>
         </div>

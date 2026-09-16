@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Dropzone } from '../components/Dropzone';
+import { Button } from '../components/Button';
 
 const DataFileIcon = () => (
   <svg className="w-14 h-14" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -7,21 +9,34 @@ const DataFileIcon = () => (
 );
 
 export function UploadPage() {
+  // 1. Estado para guardar o arquivo selecionado
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  // 2. Quando o Dropzone capturar o arquivo, salvamos ele no estado
   const handleUpload = (file: File) => {
-    console.log("Arquivo pronto para ser enviado ao servidor:", file.name, file.size);
-    // TODO: fetch/axios para a API
+    setSelectedFile(file);
+  };
+
+  // 3. Função que roda quando o usuário clica no botão "Iniciar Validação"
+  const handleStartValidation = () => {
+    if (!selectedFile) return;
+    
+    // TODO: FAZER fetch/axios para o Backend 
+    console.log("Preparando envio para a Sandbox...", selectedFile.name);
+    alert(`Enviando o arquivo "${selectedFile.name}" para validação!`);
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <h1 className="font-orbitron text-4xl font-bold text-white mb-6 tracking-wider uppercase">
-        Fazer Upload
-      </h1>
+    <div className="w-full max-w-4xl mx-auto flex flex-col gap-6">
       
-      <p className="text-white mb-4 text-sm font-medium uppercase tracking-widest">
-        Validação de Arquivos Sandbox
-      </p>
+      <div>
+        <h1 className="font-orbitron text-4xl font-bold text-white mb-2 tracking-wider uppercase">
+          Fazer Upload
+        </h1>
+        <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">
+          Validação de Arquivos
+        </p>
+      </div>
 
       <Dropzone 
         id="sandbox-text-upload"
@@ -32,6 +47,15 @@ export function UploadPage() {
         icon={<DataFileIcon />}
         onFileSelect={handleUpload}
       />
+
+      {/* 4. O Botão só aparece na tela SE um arquivo for selecionado */}
+      {selectedFile && (
+        <div className="flex justify-end mt-2 animate-fade-in">
+          <Button onClick={handleStartValidation}>
+            Iniciar Validação
+          </Button>
+        </div>
+      )}
 
     </div>
   );

@@ -7,6 +7,12 @@ const DataFileIcon = () => (
 );
 
 export function UploadPage() {
+
+  const handleUpload = (file: File) => {
+    console.log("Arquivo pronto para ser enviado ao servidor:", file.name, file.size);
+    // TODO: fetch/axios para a API
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       <h1 className="font-orbitron text-4xl font-bold text-white mb-6 tracking-wider uppercase">
@@ -24,6 +30,7 @@ export function UploadPage() {
         hint="TXT, CSV, LOG ou JSON"
         accept=".txt,.csv,.log,.json,text/plain"
         icon={<DataFileIcon />}
+        onFileSelect={handleUpload}
       />
 
     </div>

@@ -1,12 +1,21 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&family=Chakra+Petch:wght@400;500;600;700&family=Teko:wght@400;500;600;700&display=swap');
+
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
 @source "../node_modules/flowbite-react";
 
 @theme {
   --color-wl-lime: #D6FF38;
+  --color-wl-lime-dark: #B2D922;
   --color-wl-black: #000000;
   --color-wl-surface: #111111;
   --color-wl-surface-hover: #1A1A1A;
+
+  --font-sans: Inter, sans-serif;
+  --font-orbitron: Orbitron, sans-serif;
+  --font-tech: Rajdhani, sans-serif;
+  --font-chakra: "Chakra Petch", sans-serif;
+  --font-teko: Teko, sans-serif;
 }

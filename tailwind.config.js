@@ -8,7 +8,14 @@ export default {
     flowbite.content(),
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        orbitron: ['Orbitron', 'sans-serif'],
+        chakra: ['Chakra Petch', 'sans-serif'], 
+        teko: ['Teko', 'sans-serif'],
+      },
+    },
   },
   plugins: [
     flowbite.plugin(),

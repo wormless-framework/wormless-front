@@ -1,4 +1,6 @@
 import { HiChartPie } from 'react-icons/hi';
+import { BiUpload } from 'react-icons/bi';
+import { Link } from 'react-router-dom'; 
 
 export function Sidebar() {
   return (
@@ -7,9 +9,23 @@ export function Sidebar() {
         Menu
       </h2>
       <ul className="space-y-2 text-sm font-medium text-gray-300">
-        <li className="px-3 py-2 hover:bg-wl-surface-hover hover:text-wl-lime rounded-lg cursor-pointer flex items-center gap-3 transition-colors">
-          <HiChartPie className="w-5 h-5" />
-          Dashboard
+        <li>
+          <Link 
+            to="/upload" 
+            className="px-3 py-2 hover:bg-wl-surface-hover hover:text-wl-lime rounded-lg flex items-center gap-3 transition-colors"
+          >
+            <BiUpload className="w-5 h-5" />
+            Upload
+          </Link>
+        </li>
+        <li>
+          <Link 
+            to="/dashboard" 
+            className="px-3 py-2 hover:bg-wl-surface-hover hover:text-wl-lime rounded-lg flex items-center gap-3 transition-colors"
+          >
+            <HiChartPie className="w-5 h-5" />
+            Dashboard
+          </Link>
         </li>
       </ul>
     </div>

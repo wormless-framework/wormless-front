@@ -10,7 +10,7 @@ export function Header() {
           alt="Logo Wormless" 
           className="w-8 h-8 mix-blend-screen" 
         />
-        <span className="font-bold text-xl text-wl-lime uppercase tracking-wider">
+        <span className="font-tech text-2xl font-bold text-[#a3e635] tracking-widest uppercase">
           Wormless
         </span>
       </div>

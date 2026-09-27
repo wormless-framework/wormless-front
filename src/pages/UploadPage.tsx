@@ -9,8 +9,6 @@ const DataFileIcon = () => (
   </svg>
 );
 
-
-
 export function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -24,47 +22,53 @@ export function UploadPage() {
   const handleStartValidation = async () => {
     if (!selectedFile) return;
     
-    // 1. Inicia o estado de carregamento para a UI
     setIsUploading(true);
 
-    // 2. Prepara o arquivo para o envio (FormData)
     const formData = new FormData();
-    formData.append('file', selectedFile); 
+
+    formData.append('arquivo', selectedFile); 
 
     try {
-      // 3. Faz a requisição para API
-      const response = await fetch('http://localhost:8080/api/sandbox/upload', {
+      const response = await fetch('http://localhost:8080/sandbox/analises', {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Falha na comunicação com o servidor da Sandbox.');
+        // Se a API devolver um erro (ex: 400 Bad Request se não for PDF)
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.message || 'Falha na comunicação com o servidor.';
+        throw new Error(errorMessage);
       }
 
-      // 4. Lida com a resposta do Back-end
-      // Se a sua API retornar um JSON do tipo { title: "...", content: "..." }:
-      //const data = await response.json();
-      // setReportData({
-      //   title: data.title,
-      //   content: data.content
-      // });
+      // Lê a resposta JSON baseada no AnaliseJobResponseDTO do backend
+      const data = await response.json();
+      
+      // Formata a resposta para exibir no TestReport
+      let relatorioConteudo = `Status da Análise: ${data.status}\n`;
+      relatorioConteudo += `Ameaça Detectada: ${data.ameacaDetectada ? 'SIM' : 'NÃO'}\n`;
+      relatorioConteudo += `Severidade: ${data.severidade || 'N/A'}\n`;
+      relatorioConteudo += `\nResumo: ${data.resumo}\n`;
+      
+      if (data.testes && data.testes.length > 0) {
+        relatorioConteudo += `\nTestes Falhados:\n- ${data.testes.join('\n- ')}`;
+      } else {
+        relatorioConteudo += `\nNenhuma ameaça estática encontrada no documento.`;
+      }
 
-      const textoPuro = await response.text();
       setReportData({
-        title: "RESULTADO DA SANDBOX",
-        content: textoPuro
+        title: `RELATÓRIO DE ANÁLISE #${data.analiseId}`,
+        content: relatorioConteudo
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao validar arquivo:", error);
-      alert("Ocorreu um erro ao enviar o arquivo para a Sandbox. Verifique o console.");
+      alert(`Ocorreu um erro: ${error.message}`);
     } finally {
       setIsUploading(false);
     }
   };
 
-  // Função para limpar tudo e testar de novo
   const handleReset = () => {
     setSelectedFile(null);
     setReportData(null);
@@ -82,8 +86,6 @@ export function UploadPage() {
         </p>
       </div>
 
-      {/* Se tiver relatório, mostra o relatório. 
-          Se NÃO tiver, mostra a área de Upload. */}
       {reportData ? (
         <TestReport 
           title={reportData.title} 
@@ -95,10 +97,10 @@ export function UploadPage() {
           <div className={isUploading ? "opacity-50 pointer-events-none transition-opacity" : ""}>
             <Dropzone 
               id="sandbox-text-upload"
-              title="Enviar Arquivo"
+              title="Enviar Arquivo PDF"
               subtitle=""
-              hint="TXT, CSV, LOG ou JSON"
-              accept=".txt,.csv,.log,.json,text/plain"
+              hint="Apenas ficheiros PDF (Max 100MB)"
+              accept=".pdf,application/pdf"
               icon={<DataFileIcon />}
               onFileSelect={handleUpload}
             />
@@ -113,7 +115,6 @@ export function UploadPage() {
           )}
         </>
       )}
-
     </div>
   );
 }

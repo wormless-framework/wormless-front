@@ -1,4 +1,4 @@
-import { HiChartPie } from 'react-icons/hi';
+import { HiChartPie, HiClock } from 'react-icons/hi';
 import { BiUpload } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 export function Sidebar() {
   const { role } = useAuth();
   const canSeeDashboard = role === 'SOC_ANALYST' || role === 'SOC_ADMIN';
+  const canSeeHistory = role === 'CLIENT';
 
   return (
     <div className="w-64 bg-wl-surface p-4 hidden md:block">
@@ -22,6 +23,17 @@ export function Sidebar() {
             Upload
           </Link>
         </li>
+        {canSeeHistory && (
+          <li>
+            <Link
+              to="/historico"
+              className="px-3 py-2 hover:bg-wl-surface-hover hover:text-wl-lime rounded-lg flex items-center gap-3 transition-colors"
+            >
+              <HiClock className="w-5 h-5" />
+              Histórico de uploads
+            </Link>
+          </li>
+        )}
         {canSeeDashboard && (
           <li>
             <Link

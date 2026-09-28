@@ -14,7 +14,7 @@ const DataFileIcon = () => (
 export function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  
+
   const [reportData, setReportData] = useState<{ title: string; content: string } | null>(null);
 
   const handleUpload = (file: File) => {
@@ -23,17 +23,17 @@ export function UploadPage() {
 
   const handleStartValidation = async () => {
     if (!selectedFile) return;
-    
+
     // 1. Inicia o estado de carregamento para a UI
     setIsUploading(true);
 
     // 2. Prepara o arquivo para o envio (FormData)
     const formData = new FormData();
-    formData.append('file', selectedFile); 
+    formData.append('file', selectedFile);
 
     try {
       // 3. Faz a requisição para API
-      const response = await fetch('http://localhost:8080/api/sandbox/upload', {
+      const response = await fetch('http://localhost:8080/sandbox/upload', {
         method: 'POST',
         body: formData,
       });
@@ -72,7 +72,7 @@ export function UploadPage() {
 
   return (
     <div className="w-full max-w-4xl mx-auto flex flex-col gap-6">
-      
+
       <div>
         <h1 className="font-orbitron text-4xl font-bold text-white mb-2 tracking-wider uppercase">
           {reportData ? "Resultado" : "Fazer Upload"}
@@ -82,18 +82,18 @@ export function UploadPage() {
         </p>
       </div>
 
-      {/* Se tiver relatório, mostra o relatório. 
+      {/* Se tiver relatório, mostra o relatório.
           Se NÃO tiver, mostra a área de Upload. */}
       {reportData ? (
-        <TestReport 
-          title={reportData.title} 
-          content={reportData.content} 
-          onReset={handleReset} 
+        <TestReport
+          title={reportData.title}
+          content={reportData.content}
+          onReset={handleReset}
         />
       ) : (
         <>
           <div className={isUploading ? "opacity-50 pointer-events-none transition-opacity" : ""}>
-            <Dropzone 
+            <Dropzone
               id="sandbox-text-upload"
               title="Enviar Arquivo"
               subtitle=""

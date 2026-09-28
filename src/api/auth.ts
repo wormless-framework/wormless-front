@@ -13,7 +13,7 @@ export function homeForRole(role: Role): string {
 }
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
-  const data = await request<LoginResponse>("/api/auth/login", {
+  const data = await request<LoginResponse>("/auth/login", {
     method: "POST",
     skipAuth: true,
     body: JSON.stringify({ email, password }),

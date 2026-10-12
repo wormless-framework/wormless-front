@@ -14,8 +14,6 @@ export function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const [reportData, setReportData] = useState<{ title: string; content: string } | null>(null);
-
   const handleUpload = (file: File) => {
     setSelectedFile(file);
   };
@@ -23,23 +21,19 @@ export function UploadPage() {
   const handleStartValidation = async () => {
     if (!selectedFile) return;
 
-    // 1. Inicia o estado de carregamento para a UI
-    
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append('file', selectedFile);
+    // 1. Tem de ser 'arquivo' para o Spring Boot reconhecer (@RequestParam("arquivo"))
+    formData.append('arquivo', selectedFile);
 
     try {
-      // 3. Faz a requisição para API
-      const response = await fetch('http://localhost:8080/sandbox/upload', {
-    // 1. Tem de ser 'arquivo' para o Spring Boot reconhecer
-    formData.append('arquivo', selectedFile); 
+      const token = localStorage.getItem('token');
 
-    try {
-      // 2. O endpoint correto da tua API
+      // 2. Endpoint correto da API enviando o Token JWT
       const response = await fetch('http://localhost:8080/sandbox/analises', {
         method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       });
 
@@ -50,7 +44,7 @@ export function UploadPage() {
       // 3. Lemos o JSON que o Spring Boot devolve (AnaliseJobResponseDTO)
       const data = await response.json();
 
-      // 4. Em vez de mostrar aqui, redirecionamos para o Relatório Detalhado!
+      // 4. Redirecionamos para o Relatório Detalhado
       navigate(`/relatorio/${data.analiseId}`);
 
     } catch (error) {
@@ -63,7 +57,6 @@ export function UploadPage() {
 
   return (
     <div className="w-full max-w-4xl mx-auto flex flex-col gap-6">
-
       <div>
         <h1 className="font-orbitron text-4xl font-bold text-white mb-2 tracking-wider uppercase">
           Fazer Upload
@@ -73,30 +66,9 @@ export function UploadPage() {
         </p>
       </div>
 
-      {/* Se tiver relatório, mostra o relatório.
-          Se NÃO tiver, mostra a área de Upload. */}
-      {reportData ? (
-        <TestReport
-          title={reportData.title}
-          content={reportData.content}
-          onReset={handleReset}
-        />
-      ) : (
-        <>
-          <div className={isUploading ? "opacity-50 pointer-events-none transition-opacity" : ""}>
-            <Dropzone
-              id="sandbox-text-upload"
-              title="Enviar Arquivo"
-              subtitle=""
-              hint="TXT, CSV, LOG ou JSON"
-              accept=".txt,.csv,.log,.json,text/plain"
-              icon={<DataFileIcon />}
-              onFileSelect={handleUpload}
-            />
-          </div>
       <div className={isUploading ? "opacity-50 pointer-events-none transition-opacity" : ""}>
         <Dropzone 
-          id="sandbox-text-upload"
+          id="sandbox-pdf-upload"
           title="Enviar Arquivo PDF"
           subtitle=""
           hint="Apenas ficheiros PDF (Max 100MB)"
@@ -113,7 +85,6 @@ export function UploadPage() {
           </Button>
         </div>
       )}
-
     </div>
   );
 }

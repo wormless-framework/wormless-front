@@ -7,6 +7,11 @@ import Login from './pages/Login';
 import { RequireAuth } from './components/RequireAuth';
 import { useAuth } from './context/AuthContext';
 import { homeForRole } from './api/auth';
+import { Sidebar } from './components/Sidebar'; // Ajuste o caminho se necessário
+import { Header } from './components/Header';
+import { Dashboard } from './pages/Dashboard';
+import { UploadPage } from './pages/UploadPage';
+import { RelatorioDetalhado } from './pages/RelatorioDetalhado'; // <-- 1. Importar a página
 
 // Qualquer rota desconhecida vai para a pagina inicial da role do usuario
 function RoleRedirect() {
@@ -17,10 +22,10 @@ function RoleRedirect() {
 function Shell() {
   return (
     <div className="flex h-screen w-full bg-wl-black transition-colors duration-200">
-      {/* O menu lateral fica fixo na esquerda */}
       <Sidebar />
 
       {/* Esta div agrupa o Header e o Main para que fiquem um em cima do outro (flex-col) ocupando o resto do espaco (flex-1) */}
+      
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
 
@@ -40,6 +45,11 @@ function Shell() {
             <Route path="/upload" element={<UploadPage />} />
 
             <Route path="*" element={<RoleRedirect />} />
+            
+            {/* 2. Adicionar a rota dinâmica para o relatório detalhado da IA */}
+            <Route path="/relatorio/:analiseId" element={<RelatorioDetalhado />} />
+            
+            <Route path="*" element={<Navigate to="/dashboard" replace />} /> 
           </Routes>
         </main>
       </div>

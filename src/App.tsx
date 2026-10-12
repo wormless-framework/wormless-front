@@ -1,16 +1,15 @@
-import { Routes, Route, Navigate } from 'react-router-dom'; // Importei o Navigate aqui
-import { Sidebar } from './components/Sidebar';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Sidebar } from './components/Sidebar'; // Ajuste o caminho se necessário
 import { Header } from './components/Header';
 import { Dashboard } from './pages/Dashboard';
 import { UploadPage } from './pages/UploadPage';
+import { RelatorioDetalhado } from './pages/RelatorioDetalhado'; // <-- 1. Importar a página
 
 function App() {
   return (
     <div className="flex h-screen w-full bg-wl-black transition-colors duration-200">
-      {/* O menu lateral fica fixo na esquerda */}
       <Sidebar />
       
-      {/* Esta div agrupa o Header e o Main para que fiquem um em cima do outro (flex-col) ocupando o resto do espaço (flex-1) */}
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
         
@@ -19,7 +18,9 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/upload" element={<UploadPage />} />
             
-            {/* O Navigate altera de fato a URL no navegador, em vez de apenas renderizar o componente na URL errada */}
+            {/* 2. Adicionar a rota dinâmica para o relatório detalhado da IA */}
+            <Route path="/relatorio/:analiseId" element={<RelatorioDetalhado />} />
+            
             <Route path="*" element={<Navigate to="/dashboard" replace />} /> 
           </Routes>
         </main>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dropzone } from '../components/Dropzone';
 import { Button } from '../components/Button';
-import { TestReport } from '../components/TestReport';
+import { useNavigate } from 'react-router-dom';
 
 const DataFileIcon = () => (
   <svg className="w-14 h-14" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -9,13 +9,10 @@ const DataFileIcon = () => (
   </svg>
 );
 
-
-
 export function UploadPage() {
+  const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  
-  const [reportData, setReportData] = useState<{ title: string; content: string } | null>(null);
 
   const handleUpload = (file: File) => {
     setSelectedFile(file);
@@ -24,16 +21,15 @@ export function UploadPage() {
   const handleStartValidation = async () => {
     if (!selectedFile) return;
     
-    // 1. Inicia o estado de carregamento para a UI
     setIsUploading(true);
 
-    // 2. Prepara o arquivo para o envio (FormData)
     const formData = new FormData();
-    formData.append('file', selectedFile); 
+    // 1. Tem de ser 'arquivo' para o Spring Boot reconhecer
+    formData.append('arquivo', selectedFile); 
 
     try {
-      // 3. Faz a requisição para API
-      const response = await fetch('http://localhost:8080/api/sandbox/upload', {
+      // 2. O endpoint correto da tua API
+      const response = await fetch('http://localhost:8080/sandbox/analises', {
         method: 'POST',
         body: formData,
       });
@@ -42,19 +38,11 @@ export function UploadPage() {
         throw new Error('Falha na comunicação com o servidor da Sandbox.');
       }
 
-      // 4. Lida com a resposta do Back-end
-      // Se a sua API retornar um JSON do tipo { title: "...", content: "..." }:
-      //const data = await response.json();
-      // setReportData({
-      //   title: data.title,
-      //   content: data.content
-      // });
+      // 3. Lemos o JSON que o Spring Boot devolve (AnaliseJobResponseDTO)
+      const data = await response.json();
 
-      const textoPuro = await response.text();
-      setReportData({
-        title: "RESULTADO DA SANDBOX",
-        content: textoPuro
-      });
+      // 4. Em vez de mostrar aqui, redirecionamos para o Relatório Detalhado!
+      navigate(`/relatorio/${data.analiseId}`);
 
     } catch (error) {
       console.error("Erro ao validar arquivo:", error);
@@ -64,54 +52,36 @@ export function UploadPage() {
     }
   };
 
-  // Função para limpar tudo e testar de novo
-  const handleReset = () => {
-    setSelectedFile(null);
-    setReportData(null);
-  };
-
   return (
     <div className="w-full max-w-4xl mx-auto flex flex-col gap-6">
       
       <div>
         <h1 className="font-orbitron text-4xl font-bold text-white mb-2 tracking-wider uppercase">
-          {reportData ? "Resultado" : "Fazer Upload"}
+          Fazer Upload
         </h1>
         <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">
           Validação de Arquivos Sandbox
         </p>
       </div>
 
-      {/* Se tiver relatório, mostra o relatório. 
-          Se NÃO tiver, mostra a área de Upload. */}
-      {reportData ? (
-        <TestReport 
-          title={reportData.title} 
-          content={reportData.content} 
-          onReset={handleReset} 
+      <div className={isUploading ? "opacity-50 pointer-events-none transition-opacity" : ""}>
+        <Dropzone 
+          id="sandbox-text-upload"
+          title="Enviar Arquivo PDF"
+          subtitle=""
+          hint="Apenas ficheiros PDF (Max 100MB)"
+          accept=".pdf,application/pdf"
+          icon={<DataFileIcon />}
+          onFileSelect={handleUpload}
         />
-      ) : (
-        <>
-          <div className={isUploading ? "opacity-50 pointer-events-none transition-opacity" : ""}>
-            <Dropzone 
-              id="sandbox-text-upload"
-              title="Enviar Arquivo"
-              subtitle=""
-              hint="TXT, CSV, LOG ou JSON"
-              accept=".txt,.csv,.log,.json,text/plain"
-              icon={<DataFileIcon />}
-              onFileSelect={handleUpload}
-            />
-          </div>
+      </div>
 
-          {selectedFile && (
-            <div className="flex justify-end mt-2 animate-fade-in">
-              <Button onClick={handleStartValidation} isLoading={isUploading}>
-                Iniciar Validação
-              </Button>
-            </div>
-          )}
-        </>
+      {selectedFile && (
+        <div className="flex justify-end mt-2 animate-fade-in">
+          <Button onClick={handleStartValidation} isLoading={isUploading}>
+            Iniciar Validação
+          </Button>
+        </div>
       )}
 
     </div>

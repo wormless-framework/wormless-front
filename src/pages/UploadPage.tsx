@@ -20,17 +20,20 @@ export function UploadPage() {
 
   const handleStartValidation = async () => {
     if (!selectedFile) return;
-    
+
     setIsUploading(true);
 
     const formData = new FormData();
-    // 1. Tem de ser 'arquivo' para o Spring Boot reconhecer
-    formData.append('arquivo', selectedFile); 
+    // 1. Tem de ser 'arquivo' para o Spring Boot reconhecer (@RequestParam("arquivo"))
+    formData.append('arquivo', selectedFile);
 
     try {
-      // 2. O endpoint correto da tua API
+      const token = localStorage.getItem('token');
+
+      // 2. Endpoint correto da API enviando o Token JWT
       const response = await fetch('http://localhost:8080/sandbox/analises', {
         method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,
       });
 
@@ -41,7 +44,7 @@ export function UploadPage() {
       // 3. Lemos o JSON que o Spring Boot devolve (AnaliseJobResponseDTO)
       const data = await response.json();
 
-      // 4. Em vez de mostrar aqui, redirecionamos para o Relatório Detalhado!
+      // 4. Redirecionamos para o Relatório Detalhado
       navigate(`/relatorio/${data.analiseId}`);
 
     } catch (error) {
@@ -54,7 +57,6 @@ export function UploadPage() {
 
   return (
     <div className="w-full max-w-4xl mx-auto flex flex-col gap-6">
-      
       <div>
         <h1 className="font-orbitron text-4xl font-bold text-white mb-2 tracking-wider uppercase">
           Fazer Upload
@@ -66,7 +68,7 @@ export function UploadPage() {
 
       <div className={isUploading ? "opacity-50 pointer-events-none transition-opacity" : ""}>
         <Dropzone 
-          id="sandbox-text-upload"
+          id="sandbox-pdf-upload"
           title="Enviar Arquivo PDF"
           subtitle=""
           hint="Apenas ficheiros PDF (Max 100MB)"
@@ -83,7 +85,6 @@ export function UploadPage() {
           </Button>
         </div>
       )}
-
     </div>
   );
 }

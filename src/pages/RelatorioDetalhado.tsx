@@ -14,8 +14,16 @@ export function RelatorioDetalhado() {
   useEffect(() => {
     const fetchRelatorio = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/relatorios/analise/${analiseId}`);
-        if (!response.ok) throw new Error('Relatório detalhado não encontrado.');
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(`http://localhost:8080/relatorios/analise/${analiseId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+
+        if (!response.ok) {
+          throw new Error(`Relatório detalhado não encontrado (Status: ${response.status}).`);
+        }
+
         const data = await response.json();
         setRelatorio(data);
       } catch (err: any) {
@@ -43,7 +51,7 @@ export function RelatorioDetalhado() {
             Relatório Forense
           </h1>
           <p className="text-gray-400 font-tech text-lg uppercase tracking-widest mt-1">
-            Job ID #{relatorio.analiseJob?.id} • Data: {new Date(relatorio.dataGeracao).toLocaleString()}
+            Job ID #{relatorio.analiseJob?.id} | Data: {new Date(relatorio.dataGeracao).toLocaleString()}
           </p>
         </div>
         <SeverityBadge severity={relatorio.severidadeGeral} />
@@ -81,7 +89,7 @@ export function RelatorioDetalhado() {
         </div>
       )}
 
-      {/* EVIDÊNCIAS DETETADAS (USANDO O COMPONENTE REUTILIZÁVEL) */}
+      {/* EVIDÊNCIAS DETETADAS */}
       <section className="bg-wl-surface border border-gray-800 p-6 mt-2">
         <h2 className="text-white font-orbitron text-xl mb-4 border-b border-gray-700 pb-2">Evidências (Indicadores de Comprometimento)</h2>
         <div className="space-y-4">

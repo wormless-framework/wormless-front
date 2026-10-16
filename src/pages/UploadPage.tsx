@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Dropzone } from '../components/Dropzone';
 import { Button } from '../components/Button';
+import { ArquivoSuspeitoCard } from '../components/ArquivoSuspeitoCard';
 import { useNavigate } from 'react-router-dom';
 import { HiDocumentArrowUp, HiCodeBracketSquare } from 'react-icons/hi2';
 
@@ -59,6 +60,35 @@ export function UploadPage() {
     }
   };
 
+  const handleDeepScan = async (caminhoArquivo: string) => {
+    setIsScanningRepo(true); 
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:8080/sandbox/repositorio/deep-scan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ 
+          url: repoUrl, 
+          caminhoArquivo: caminhoArquivo 
+        }),
+      });
+
+      if (!response.ok) throw new Error('Falha ao iniciar Deep Scan.');
+      
+      const data = await response.json();
+      navigate(`/relatorio/${data.analiseId}`);
+      
+    } catch (error) {
+      console.error("Erro no Deep Scan:", error);
+      alert("Ocorreu um erro ao executar a análise profunda.");
+    } finally {
+      setIsScanningRepo(false);
+    }
+  };
+
   const handleScanRepository = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!repoUrl) return;
@@ -95,7 +125,7 @@ export function UploadPage() {
           Análise de Ameaças
         </h1>
         <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">
-          Escolha o método de ingestão de dados
+          Escolha o método de análise.
         </p>
       </div>
 
@@ -179,19 +209,14 @@ export function UploadPage() {
               ) : (
                 <div className="flex flex-col gap-4">
                   {suspeitos.map((arq, idx) => (
-                    <div key={idx} className="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#0a0a0a] p-4 border-l-2 border-red-500">
-                      <div>
-                        <p className="text-white font-bold font-mono text-sm">{arq.nome}</p>
-                        <p className="text-gray-500 text-xs font-mono mb-2">{arq.caminho}</p>
-                        <p className="text-red-400 text-sm">{arq.motivoSuspeita}</p>
-                      </div>
-                      <button 
-                        onClick={() => alert('Em breve: Aqui faremos o envio do artefato específico para o deep scan na Sandbox.')}
-                        className="mt-4 md:mt-0 text-xs bg-transparent text-wl-lime border border-wl-lime hover:bg-wl-lime hover:text-black px-4 py-2 uppercase font-tech tracking-widest transition-colors"
-                      >
-                        Análise Detalhada
-                      </button>
-                    </div>
+                    <ArquivoSuspeitoCard
+                      key={idx}
+                      nome={arq.nome}
+                      caminho={arq.caminho}
+                      motivoSuspeita={arq.motivoSuspeita}
+                      isScanning={isScanningRepo}
+                      onDeepScan={handleDeepScan}
+                    />
                   ))}
                 </div>
               )}

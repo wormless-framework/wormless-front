@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import { RequireAuth } from './components/RequireAuth';
 import { useAuth } from './context/AuthContext';
 import { homeForRole } from './api/auth';
+import { FalsosPositivos } from './pages/FalsosPositivos';
+
 
 // Qualquer rota desconhecida vai para a pagina inicial da role do usuario
 function RoleRedirect() {
@@ -27,6 +29,15 @@ function Shell() {
         <main className="flex-1 p-8 overflow-y-auto">
           <Routes>
             {/* Painel SOC: so analista/admin */}
+          
+            <Route
+              path="/falsos-positivos"
+              element={
+                <RequireAuth allowedRoles={['SOC_ANALYST', 'SOC_ADMIN']}>
+                  <FalsosPositivos />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/dashboard"
               element={
@@ -40,7 +51,7 @@ function Shell() {
             <Route path="/upload" element={<UploadPage />} />
 
             {/* Rota dinâmica para o relatório detalhado da IA */}
-            <Route path="/relatorio/:analiseId" element={<RelatorioDetalhado />} />
+            <Route path="/relatorio/:id" element={<RelatorioDetalhado />} />
 
             {/* Fallback único para rotas não encontradas */}
             <Route path="*" element={<RoleRedirect />} />

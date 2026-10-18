@@ -51,7 +51,17 @@ export function UploadPage() {
 
       if (!response.ok) throw new Error('Falha na comunicação com o servidor.');
       const data = await response.json();
-      navigate(`/relatorio/${data.analiseId}`);
+      console.log("Resposta do Backend (Upload):", data); 
+      
+      // Procura o ID na propriedade analiseId, se não existir, tenta na propriedade id
+      const idCorreto = data.analiseId || data.id; 
+      
+      if (!idCorreto) {
+         alert("Erro: O backend não devolveu o ID do relatório. Veja o console.");
+         return;
+      }
+      
+      navigate(`/relatorio/${idCorreto}`);
     } catch (error) {
       console.error("Erro ao validar arquivo:", error);
       alert("Ocorreu um erro ao enviar o arquivo.");
@@ -79,7 +89,17 @@ export function UploadPage() {
       if (!response.ok) throw new Error('Falha ao iniciar Deep Scan.');
       
       const data = await response.json();
-      navigate(`/relatorio/${data.analiseId}`);
+      console.log("Resposta do Backend (Deep Scan):", data); 
+      
+      // Procura o ID na propriedade analiseId, se não existir, tenta na propriedade id
+      const idCorreto = data.analiseId || data.id;
+      
+      if (!idCorreto) {
+         alert("Erro: O backend não devolveu o ID do relatório. Veja o console.");
+         return;
+      }
+      
+      navigate(`/relatorio/${idCorreto}`);
       
     } catch (error) {
       console.error("Erro no Deep Scan:", error);

@@ -28,3 +28,17 @@ export function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
 }
+
+export function getUserIdFromToken(): number | null {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  
+  try {
+    const payload = JSON.parse(
+      atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+    );
+    return payload.sub ? parseInt(payload.sub, 10) : null; 
+  } catch {
+    return null;
+  }
+}

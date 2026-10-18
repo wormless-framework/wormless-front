@@ -9,6 +9,7 @@ import { RequireAuth } from './components/RequireAuth';
 import { useAuth } from './context/AuthContext';
 import { homeForRole } from './api/auth';
 import { FalsosPositivos } from './pages/FalsosPositivos';
+import { Historico } from './pages/Historico';
 
 
 // Qualquer rota desconhecida vai para a pagina inicial da role do usuario
@@ -47,11 +48,27 @@ function Shell() {
               }
             />
 
+            <Route
+              path="/historico"
+              element={
+                <RequireAuth allowedRoles={['CLIENT']}>
+                  <Historico />
+                </RequireAuth>
+              }
+            />
+
             {/* Sandbox: qualquer usuario autenticado */}
             <Route path="/upload" element={<UploadPage />} />
 
             {/* Rota dinâmica para o relatório detalhado da IA */}
-            <Route path="/relatorio/:id" element={<RelatorioDetalhado />} />
+            <Route
+              path="/relatorio/analise/:id"
+              element={<RequireAuth allowedRoles={['CLIENT', 'SOC_ANALYST', 'SOC_ADMIN']}><RelatorioDetalhado /></RequireAuth>}
+            />
+            <Route
+              path="/relatorio/:id"
+              element={<RequireAuth allowedRoles={['SOC_ANALYST', 'SOC_ADMIN']}><RelatorioDetalhado /></RequireAuth>}
+            />
 
             {/* Fallback único para rotas não encontradas */}
             <Route path="*" element={<RoleRedirect />} />

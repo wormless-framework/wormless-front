@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useMatch } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { SeverityBadge } from '../components/SeverityBadge';
 import { EvidenceCard } from '../components/EvidenceCard';
 import { FalsoPositivoModal } from '../components/FalsoPositivoModal';
 import { getUserIdFromToken } from '../api/auth';
+import { useAuth } from '../context/AuthContext';
 
 export function RelatorioDetalhado() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const rotaPorAnalise = Boolean(useMatch('/relatorio/analise/:id'));
+  const { role } = useAuth();
+  const canManageFalsePositives = role === 'SOC_ANALYST' || role === 'SOC_ADMIN';
 
   const [relatorio, setRelatorio] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +31,12 @@ export function RelatorioDetalhado() {
     const fetchRelatorio = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:8080/relatorios/${id}`, {
+        const endpoint = role === 'CLIENT'
+          ? `http://localhost:8080/me/relatorios/analise/${id}`
+          : rotaPorAnalise
+            ? `http://localhost:8080/relatorios/analise/${id}`
+            : `http://localhost:8080/relatorios/${id}`;
+        const response = await fetch(endpoint, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         if (!response.ok) throw new Error('Falha ao carregar o relatório.');
@@ -39,9 +48,11 @@ export function RelatorioDetalhado() {
       }
     };
     fetchRelatorio();
-  }, [id]);
+  }, [id, role, rotaPorAnalise]);
 
   useEffect(() => {
+    if (!canManageFalsePositives) return;
+
     const fetchRegras = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -56,7 +67,7 @@ export function RelatorioDetalhado() {
       }
     };
     fetchRegras();
-  }, []);
+  }, [canManageFalsePositives]);
 
   if (loading) return <div className="text-wl-lime p-8 font-orbitron text-xl animate-pulse">A descodificar relatório forense...</div>;
   if (error) return <div className="text-red-500 p-8 font-tech text-xl border border-red-500 bg-red-900/20">{error}</div>;
@@ -155,7 +166,7 @@ export function RelatorioDetalhado() {
                 descricaoComportamento={ind.descricaoComportamento}
                 trechoArquivo={ind.trechoArquivo}
                 isFalsePositive={ind.status === 'FALSO_POSITIVO'}
-                onMarkFalsePositive={() => handleOpenModal(ind.id)}
+                onMarkFalsePositive={canManageFalsePositives ? () => handleOpenModal(ind.id) : undefined}
               />
             ))
           ) : (
@@ -165,15 +176,15 @@ export function RelatorioDetalhado() {
       </section>
 
       <div className="mt-4 flex justify-start">
-        <Button onClick={() => navigate('/upload')}>← Voltar para Upload</Button>
+        <Button onClick={() => navigate(role === 'CLIENT' ? '/historico' : '/dashboard')}>Voltar</Button>
       </div>
 
-      <FalsoPositivoModal 
+      {canManageFalsePositives && <FalsoPositivoModal
         isOpen={modalOpen} 
         regras={regrasDisponiveis} 
         onClose={() => setModalOpen(false)} 
-        onConfirm={handleConfirmarFalsoPositivo} 
-      />
+        onConfirm={handleConfirmarFalsoPositivo}
+      />}
     </div>
   );
 }

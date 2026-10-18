@@ -61,7 +61,7 @@ export function UploadPage() {
          return;
       }
       
-      navigate(`/relatorio/${idCorreto}`);
+      navigate(`/relatorio/analise/${idCorreto}`);
     } catch (error) {
       console.error("Erro ao validar arquivo:", error);
       alert("Ocorreu um erro ao enviar o arquivo.");
@@ -99,7 +99,7 @@ export function UploadPage() {
          return;
       }
       
-      navigate(`/relatorio/${idCorreto}`);
+      navigate(`/relatorio/analise/${idCorreto}`);
       
     } catch (error) {
       console.error("Erro no Deep Scan:", error);

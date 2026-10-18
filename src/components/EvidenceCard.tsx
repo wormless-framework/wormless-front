@@ -1,12 +1,9 @@
-import { useState } from 'react';
-import { Button } from './Button';
-
 interface EvidenceCardProps {
   linhaOcorrencia: number;
   descricaoComportamento: string;
   trechoArquivo: string;
   isFalsePositive?: boolean;
-  onMarkFalsePositive?: (justificativa: string) => Promise<void>;
+  onMarkFalsePositive?: () => void;
 }
 
 export function EvidenceCard({ 
@@ -15,7 +12,7 @@ export function EvidenceCard({
   trechoArquivo, 
   onMarkFalsePositive,
   isFalsePositive // <-- Nova propriedade
-}: any) {
+}: EvidenceCardProps) {
   return (
     <div className={`border p-5 flex flex-col lg:flex-row gap-6 transition-colors ${
       isFalsePositive 
@@ -48,14 +45,14 @@ export function EvidenceCard({
               Falso Positivo
             </span>
           </div>
-        ) : (
+        ) : onMarkFalsePositive ? (
           <button 
             onClick={onMarkFalsePositive}
             className="border border-red-900/50 text-red-500 hover:bg-red-900/20 hover:border-red-500 px-4 py-2 font-tech uppercase text-xs tracking-widest transition-all w-full lg:w-auto"
           >
             Falso Positivo?
           </button>
-        )}
+        ) : null}
       </div>
 
     </div>

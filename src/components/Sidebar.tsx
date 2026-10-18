@@ -1,7 +1,8 @@
-import { HiChartPie, HiClock } from 'react-icons/hi';
+import { HiChartPie, HiClock, HiShieldCheck } from 'react-icons/hi';
 import { BiUpload } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+
 
 export function Sidebar() {
   const { role } = useAuth();
@@ -35,15 +36,26 @@ export function Sidebar() {
           </li>
         )}
         {canSeeDashboard && (
-          <li>
-            <Link
-              to="/dashboard"
-              className="px-3 py-2 hover:bg-wl-surface-hover hover:text-wl-lime rounded-lg flex items-center gap-3 transition-colors"
-            >
-              <HiChartPie className="w-5 h-5" />
-              Dashboard
-            </Link>
-          </li>
+          <>
+            <li>
+              <Link
+                to="/dashboard"
+                className="px-3 py-2 hover:bg-wl-surface-hover hover:text-wl-lime rounded-lg flex items-center gap-3 transition-colors"
+              >
+                <HiChartPie className="w-5 h-5" />
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/falsos-positivos"
+                className="px-3 py-2 hover:bg-wl-surface-hover hover:text-wl-lime rounded-lg flex items-center gap-3 transition-colors"
+              >
+                <HiShieldCheck className="w-5 h-5" />
+                Falsos Positivos
+              </Link>
+            </li>
+          </>
         )}
       </ul>
     </div>

@@ -28,3 +28,20 @@ export function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
 }
+
+// Adicione isso ao final do src/api/auth.ts
+export function getUserIdFromToken(): number | null {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  
+  try {
+    const payload = JSON.parse(
+      atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+    );
+    // Assumindo que o subject ("sub") ou outro claim guarda o ID.
+    // Ajuste "sub" para a chave correta baseada no seu backend JwtService
+    return payload.sub ? parseInt(payload.sub, 10) : null; 
+  } catch {
+    return null;
+  }
+}
